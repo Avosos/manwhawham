@@ -99,11 +99,19 @@ function fetchURL(url, options = {}) {
 async function mangadexFetch(endpoint, params = {}) {
   const url = new URL(`${MANGADEX_API}${endpoint}`);
   for (const [k, v] of Object.entries(params)) {
-    if (Array.isArray(v)) v.forEach((val) => url.searchParams.append(`${k}[]`, val));
-    else if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+    if (Array.isArray(v)) {
+      v.forEach((val) => url.searchParams.append(`${k}[]`, val));
+    } else if (v !== null && v !== undefined && typeof v === "object") {
+      // Handle nested objects like order: { field: "asc" }
+      for (const [subKey, subVal] of Object.entries(v)) {
+        url.searchParams.set(`${k}[${subKey}]`, String(subVal));
+      }
+    } else if (v !== undefined && v !== null) {
+      url.searchParams.set(k, String(v));
+    }
   }
   const res = await fetchURL(url.toString());
-  if (!res.ok) throw new Error(`MangaDex API error ${res.status}`);
+  if (!res.ok) throw new Error(`MangaDex API error ${res.status}: ${url.toString()}`);
   return res.json();
 }
 
@@ -252,7 +260,6 @@ ipcMain.handle("mangadex:search", async (_, query, options = {}) => {
     limit: options.limit || 20,
     offset: options.offset || 0,
     includes: ["cover_art", "author", "artist"],
-    order: { relevance: "desc" },
     contentRating: options.contentRating || ["safe", "suggestive"],
     ...(options.status ? { status: options.status } : {}),
     ...(options.includedTags ? { includedTags: options.includedTags } : {}),
