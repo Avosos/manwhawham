@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="mw-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#fb923c"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#mw-bg)"/>
+  <g transform="translate(128,128)" fill="none" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Back page -->
+    <rect x="-38" y="-50" width="60" height="80" rx="4" fill="white" fill-opacity="0.35" stroke="none"/>
+    <!-- Front page -->
+    <rect x="-30" y="-56" width="60" height="80" rx="4" fill="white" fill-opacity="0.9" stroke="none"/>
+    <!-- Page lines (manga panels) -->
+    <line x1="-20" y1="-40" x2="20" y2="-40" stroke="white" stroke-opacity="0.0"/>
+    <!-- Panel grid on front page -->
+    <rect x="-24" y="-50" width="48" height="34" rx="2" stroke="rgba(0,0,0,0.25)" stroke-width="3" fill="none"/>
+    <rect x="-24" y="-12" width="22" height="30" rx="2" stroke="rgba(0,0,0,0.25)" stroke-width="3" fill="none"/>
+    <rect x="2" y="-12" width="22" height="30" rx="2" stroke="rgba(0,0,0,0.25)" stroke-width="3" fill="none"/>
+    <!-- Lightning/action burst -->
+    <path d="M 30 -10 L 50 -30 L 42 -8 L 58 -12 L 34 20 L 40 0 Z" fill="white" stroke="none" opacity="0.95"/>
+    <!-- "WHAM" text hint -->
+    <text x="-2" y="56" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="26" fill="white" stroke="none" letter-spacing="2">WHAM</text>
+  </g>
+</svg>

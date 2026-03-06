@@ -1,8 +1,13 @@
-const { app, BrowserWindow, ipcMain, shell, session } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, session, nativeImage } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const https = require("https");
 const http = require("http");
+
+// ─── Set app user model ID for Windows taskbar ───────────────────────────────
+if (process.platform === "win32") {
+  app.setAppUserModelId("com.avosos.manwhawham");
+}
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const IS_DEV = !app.isPackaged;
@@ -150,6 +155,13 @@ function extractMangaInfo(manga) {
   };
 }
 
+// ─── Icon path helper ────────────────────────────────────────────────────────
+function getIconPath() {
+  if (process.platform === "win32")
+    return path.join(__dirname, "../public/icon.ico");
+  return path.join(__dirname, "../public/icon.png");
+}
+
 // ─── Window Creation ────────────────────────────────────────────────────────
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -162,6 +174,7 @@ function createWindow() {
     backgroundColor: "#08080d",
     show: false,
     center: true,
+    icon: getIconPath(),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
