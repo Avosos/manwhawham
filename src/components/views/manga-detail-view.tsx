@@ -14,6 +14,8 @@ import {
   ExternalLink,
   Users,
 } from "lucide-react";
+import { getTranslations } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 
 export default function MangaDetailView() {
   const selectedManga = useMangaStore((s) => s.selectedManga);
@@ -25,6 +27,8 @@ export default function MangaDetailView() {
   const isInLibrary = useMangaStore((s) => s.isInLibrary);
   const openReader = useMangaStore((s) => s.openReader);
   const downloads = useMangaStore((s) => s.downloads);
+  const settings = useMangaStore((s) => s.settings);
+  const t = getTranslations(settings.uiLanguage as Language);
 
   const [chaptersExpanded, setChaptersExpanded] = useState(true);
   const [sortAsc, setSortAsc] = useState(true);
@@ -110,7 +114,7 @@ export default function MangaDetailView() {
         {/* Back button */}
         <button onClick={goBack} className="btn-ghost" style={{ marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
           <ArrowLeft size={16} />
-          Back
+          {t.detail.back}
         </button>
 
         <div style={{ display: "flex", gap: 28 }}>
@@ -171,12 +175,12 @@ export default function MangaDetailView() {
             <div style={{ display: "flex", gap: 16, marginBottom: 14, fontSize: 13 }}>
               {manga.author && (
                 <span style={{ color: "var(--text-secondary)" }}>
-                  <strong style={{ color: "var(--text-primary)" }}>Author:</strong> {manga.author}
+                  <strong style={{ color: "var(--text-primary)" }}>{t.detail.author}</strong> {manga.author}
                 </span>
               )}
               {manga.artist && manga.artist !== manga.author && (
                 <span style={{ color: "var(--text-secondary)" }}>
-                  <strong style={{ color: "var(--text-primary)" }}>Artist:</strong> {manga.artist}
+                  <strong style={{ color: "var(--text-primary)" }}>{t.detail.artist}</strong> {manga.artist}
                 </span>
               )}
             </div>
@@ -207,7 +211,7 @@ export default function MangaDetailView() {
             <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
               <button className="btn-primary" onClick={handleReadFirst} disabled={chapters.length === 0} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Play size={15} />
-                {chapters.length > 0 ? "Start Reading" : "No Chapters"}
+                {chapters.length > 0 ? t.detail.startReading : t.detail.noChapters}
               </button>
               <button
                 className="btn-secondary"
@@ -221,7 +225,7 @@ export default function MangaDetailView() {
                 }}
               >
                 {inLib ? <BookmarkCheck size={15} /> : <BookmarkPlus size={15} />}
-                {inLib ? "In Library" : "Add to Library"}
+                {inLib ? t.detail.inLibrary : t.detail.addToLibrary}
               </button>
               <button
                 className="btn-ghost"
@@ -229,7 +233,7 @@ export default function MangaDetailView() {
                 style={{ display: "flex", alignItems: "center", gap: 6 }}
               >
                 <ExternalLink size={14} />
-                MangaDex
+                {t.detail.mangadex}
               </button>
             </div>
 
@@ -276,14 +280,14 @@ export default function MangaDetailView() {
             }}
           >
             {chaptersExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-            Chapters ({chapters.length})
+            {t.detail.chapters.replace("{n}", String(chapters.length))}
           </button>
           <button
             onClick={() => setSortAsc(!sortAsc)}
             className="btn-ghost"
             style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}
           >
-            {sortAsc ? "Ascending" : "Descending"}
+            {sortAsc ? t.detail.ascending : t.detail.descending}
             {sortAsc ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
         </div>
@@ -314,7 +318,7 @@ export default function MangaDetailView() {
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>
-                      Ch. {ch.chapter || "?"}
+                      {t.detail.chapter.replace("{n}", ch.chapter || "?")}
                       {ch.title && (
                         <span style={{ fontWeight: 400, color: "var(--text-secondary)", marginLeft: 8 }}>
                           {ch.title}
@@ -326,9 +330,9 @@ export default function MangaDetailView() {
                         <Users size={10} />
                         {ch.scanlationGroup}
                       </span>
-                      {ch.volume && <span>Vol. {ch.volume}</span>}
+                      {ch.volume && <span>{t.detail.volume.replace("{n}", ch.volume)}</span>}
                       <span>{new Date(ch.publishAt).toLocaleDateString()}</span>
-                      {ch.pages > 0 && <span>{ch.pages} pages</span>}
+                      {ch.pages > 0 && <span>{t.detail.pages.replace("{n}", String(ch.pages))}</span>}
                     </div>
                   </div>
 
@@ -342,7 +346,7 @@ export default function MangaDetailView() {
                         borderRadius: 4,
                         background: "rgba(74,222,128,0.1)",
                       }}>
-                        Downloaded
+                        {t.detail.downloaded}
                       </span>
                     )}
                     {ch.externalUrl ? (
@@ -358,7 +362,7 @@ export default function MangaDetailView() {
                         onClick={(e) => { e.stopPropagation(); handleDownloadChapter(chIdx); }}
                         className="btn-ghost"
                         style={{ padding: 6 }}
-                        title="Download chapter"
+                        title={t.detail.downloadChapter}
                       >
                         <Download size={14} />
                       </button>

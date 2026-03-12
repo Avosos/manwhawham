@@ -3,30 +3,41 @@
 import { useState } from "react";
 import { Home, Search, BookOpen, Clock, Download, Settings } from "lucide-react";
 import { useMangaStore } from "@/stores/manga-store";
+import { getTranslations } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 import type { NavView } from "@/types";
 
 interface NavItem {
   id: NavView;
-  label: string;
   icon: React.ReactNode;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "home", label: "Home", icon: <Home size={18} /> },
-  { id: "browse", label: "Browse", icon: <Search size={18} /> },
-  { id: "library", label: "Library", icon: <BookOpen size={18} /> },
-  { id: "history", label: "History", icon: <Clock size={18} /> },
-  { id: "downloads", label: "Downloads", icon: <Download size={18} /> },
+  { id: "home", icon: <Home size={18} /> },
+  { id: "browse", icon: <Search size={18} /> },
+  { id: "library", icon: <BookOpen size={18} /> },
+  { id: "history", icon: <Clock size={18} /> },
+  { id: "downloads", icon: <Download size={18} /> },
 ];
 
 const BOTTOM_ITEMS: NavItem[] = [
-  { id: "settings", label: "Settings", icon: <Settings size={18} /> },
+  { id: "settings", icon: <Settings size={18} /> },
 ];
 
 export default function Sidebar() {
   const currentView = useMangaStore((s) => s.currentView);
   const setView = useMangaStore((s) => s.setView);
   const library = useMangaStore((s) => s.library);
+  const settings = useMangaStore((s) => s.settings);
+  const t = getTranslations(settings.uiLanguage as Language);
+  const navLabels: Record<string, string> = {
+    home: t.nav.home,
+    browse: t.nav.browse,
+    library: t.nav.library,
+    history: t.nav.history,
+    downloads: t.nav.downloads,
+    settings: t.nav.settings,
+  };
 
   return (
     <aside
@@ -43,12 +54,13 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav style={{ flex: 1, padding: "12px 8px", display: "flex", flexDirection: "column", gap: 2 }}>
         <div style={{ fontSize: 10, fontWeight: 600, color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: 1, padding: "4px 12px 8px", userSelect: "none" }}>
-          Navigation
+          {t.nav.navigation}
         </div>
         {NAV_ITEMS.map((item) => (
           <SidebarItem
             key={item.id}
             item={item}
+            label={navLabels[item.id]}
             active={currentView === item.id}
             onClick={() => setView(item.id)}
             badge={item.id === "library" && library.length > 0 ? library.length : undefined}
@@ -62,6 +74,7 @@ export default function Sidebar() {
           <SidebarItem
             key={item.id}
             item={item}
+            label={navLabels[item.id]}
             active={currentView === item.id}
             onClick={() => setView(item.id)}
           />
@@ -73,7 +86,7 @@ export default function Sidebar() {
           color: "var(--text-dim)",
           userSelect: "none",
         }}>
-          v0.1.0 · alpha
+          {t.nav.version}
         </div>
       </div>
     </aside>
@@ -82,11 +95,13 @@ export default function Sidebar() {
 
 function SidebarItem({
   item,
+  label,
   active,
   onClick,
   badge,
 }: {
   item: NavItem;
+  label: string;
   active: boolean;
   onClick: () => void;
   badge?: number;
@@ -129,7 +144,7 @@ function SidebarItem({
         }} />
       )}
       {item.icon}
-      <span style={{ flex: 1 }}>{item.label}</span>
+      <span style={{ flex: 1 }}>{label}</span>
       {badge !== undefined && (
         <span style={{
           background: "var(--success)",

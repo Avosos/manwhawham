@@ -4,21 +4,26 @@ import { useMangaStore } from "@/stores/manga-store";
 import { EmptyState } from "@/components/shared/ui";
 import { Clock, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { getTranslations } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
+import type { Translations } from "@/lib/i18n";
 
 export default function HistoryView() {
   const history = useMangaStore((s) => s.history);
   const clearHistory = useMangaStore((s) => s.clearHistory);
   const openMangaById = useMangaStore((s) => s.openMangaById);
+  const settings = useMangaStore((s) => s.settings);
+  const t = getTranslations(settings.uiLanguage as Language);
   const [confirmClear, setConfirmClear] = useState(false);
 
   if (history.length === 0) {
     return (
       <div className="animate-fadeIn" style={{ padding: "24px 32px" }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", marginBottom: 24 }}>History</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", marginBottom: 24 }}>{t.history.title}</h2>
         <EmptyState
           icon="🕐"
-          title="No reading history"
-          description="Your reading history will appear here as you read chapters."
+          title={t.history.empty}
+          description={t.history.emptyDesc}
         />
       </div>
     );
@@ -28,26 +33,26 @@ export default function HistoryView() {
     <div className="animate-fadeIn" style={{ padding: "24px 32px", maxWidth: 1000, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
         <div>
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)" }}>History</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)" }}>{t.history.title}</h2>
           <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
-            {history.length} entries
+            {t.history.entries.replace("{n}", String(history.length))}
           </p>
         </div>
         {confirmClear ? (
           <div style={{ display: "flex", gap: 8 }}>
-            <button className="btn-ghost" onClick={() => setConfirmClear(false)}>Cancel</button>
+            <button className="btn-ghost" onClick={() => setConfirmClear(false)}>{t.history.cancel}</button>
             <button
               className="btn-secondary"
               onClick={() => { clearHistory(); setConfirmClear(false); }}
               style={{ color: "var(--error)", borderColor: "var(--error)" }}
             >
-              Clear All
+              {t.history.clearAll}
             </button>
           </div>
         ) : (
           <button className="btn-ghost" onClick={() => setConfirmClear(true)} style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <Trash2 size={14} />
-            Clear
+            {t.history.clear}
           </button>
         )}
       </div>
@@ -103,12 +108,12 @@ export default function HistoryView() {
                 {entry.mangaTitle}
               </div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
-                Chapter {entry.chapterNumber} · Page {entry.page + 1}/{entry.totalPages}
+                {t.history.chapterPage.replace("{chapter}", entry.chapterNumber).replace("{page}", String(entry.page + 1)).replace("{total}", String(entry.totalPages))}
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-dim)", fontSize: 11, flexShrink: 0 }}>
               <Clock size={12} />
-              {formatTimeAgo(entry.timestamp)}
+              {formatTimeAgo(entry.timestamp, t.history)}
             </div>
           </button>
         ))}
@@ -117,14 +122,14 @@ export default function HistoryView() {
   );
 }
 
-function formatTimeAgo(timestamp: number): string {
+function formatTimeAgo(timestamp: number, h: Translations["history"]): string {
   const diff = Date.now() - timestamp;
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return h.justNow;
+  if (mins < 60) return h.minutesAgo.replace("{n}", String(mins));
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return h.hoursAgo.replace("{n}", String(hours));
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
+  if (days < 7) return h.daysAgo.replace("{n}", String(days));
   return new Date(timestamp).toLocaleDateString();
 }

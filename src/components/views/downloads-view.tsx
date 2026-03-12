@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import { useMangaStore } from "@/stores/manga-store";
 import { EmptyState } from "@/components/shared/ui";
 import { Download, Trash2, FolderOpen } from "lucide-react";
+import { getTranslations } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 
 export default function DownloadsView() {
   const downloads = useMangaStore((s) => s.downloads);
   const loadDownloads = useMangaStore((s) => s.loadDownloads);
   const library = useMangaStore((s) => s.library);
   const openMangaById = useMangaStore((s) => s.openMangaById);
+  const settings = useMangaStore((s) => s.settings);
+  const t = getTranslations(settings.uiLanguage as Language);
 
   useEffect(() => {
     loadDownloads();
@@ -20,11 +24,11 @@ export default function DownloadsView() {
   if (mangaIds.length === 0) {
     return (
       <div className="animate-fadeIn" style={{ padding: "24px 32px" }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", marginBottom: 24 }}>Downloads</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", marginBottom: 24 }}>{t.downloads.title}</h2>
         <EmptyState
           icon="📥"
-          title="No downloads yet"
-          description="Download chapters for offline reading from any manga's detail page."
+          title={t.downloads.empty}
+          description={t.downloads.emptyDesc}
         />
       </div>
     );
@@ -33,9 +37,9 @@ export default function DownloadsView() {
   return (
     <div className="animate-fadeIn" style={{ padding: "24px 32px", maxWidth: 1000, margin: "0 auto" }}>
       <div style={{ marginBottom: 24 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)" }}>Downloads</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)" }}>{t.downloads.title}</h2>
         <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
-          {mangaIds.length} manga with downloaded chapters
+          {t.downloads.mangaWithDownloads.replace("{n}", String(mangaIds.length))}
         </p>
       </div>
 
@@ -50,6 +54,9 @@ export default function DownloadsView() {
               title={libEntry?.title || mangaId}
               chapters={chapters}
               onClick={() => openMangaById(mangaId)}
+              viewLabel={t.downloads.view}
+              chapterLabel={t.downloads.chapter}
+              chaptersDownloadedLabel={t.downloads.chaptersDownloaded}
             />
           );
         })}
@@ -58,11 +65,14 @@ export default function DownloadsView() {
   );
 }
 
-function DownloadEntry({ mangaId, title, chapters, onClick }: {
+function DownloadEntry({ mangaId, title, chapters, onClick, viewLabel, chapterLabel, chaptersDownloadedLabel }: {
   mangaId: string;
   title: string;
   chapters: string[];
   onClick: () => void;
+  viewLabel: string;
+  chapterLabel: string;
+  chaptersDownloadedLabel: string;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -97,7 +107,7 @@ function DownloadEntry({ mangaId, title, chapters, onClick }: {
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 600 }}>{title}</div>
           <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-            {chapters.length} chapter{chapters.length !== 1 ? "s" : ""} downloaded
+            {chaptersDownloadedLabel.replace("{n}", String(chapters.length))}
           </div>
         </div>
         <button
@@ -105,7 +115,7 @@ function DownloadEntry({ mangaId, title, chapters, onClick }: {
           className="btn-ghost"
           style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12 }}
         >
-          <FolderOpen size={13} /> View
+          <FolderOpen size={13} /> {viewLabel}
         </button>
       </button>
 
@@ -132,7 +142,7 @@ function DownloadEntry({ mangaId, title, chapters, onClick }: {
                 color: "var(--text-secondary)",
               }}
             >
-              Ch. {ch}
+              {chapterLabel.replace("{n}", ch)}
               <button
                 onClick={() => handleDelete(ch)}
                 style={{

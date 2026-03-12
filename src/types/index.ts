@@ -75,6 +75,7 @@ export interface AppSettings {
   readerDirection: "ltr" | "rtl";
   imageQuality: "data" | "dataSaver";
   language: string;
+  uiLanguage: "en" | "de";
   showNSFW: boolean;
 }
 

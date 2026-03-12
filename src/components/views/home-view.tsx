@@ -4,6 +4,8 @@ import { useMangaStore } from "@/stores/manga-store";
 import MangaCard from "@/components/shared/manga-card";
 import { SectionHeader, MangaGrid, LoadingGrid } from "@/components/shared/ui";
 import { TrendingUp, Clock, Search } from "lucide-react";
+import { getTranslations } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 
 export default function HomeView() {
   const popularManga = useMangaStore((s) => s.popularManga);
@@ -12,6 +14,8 @@ export default function HomeView() {
   const openMangaDetail = useMangaStore((s) => s.openMangaDetail);
   const setView = useMangaStore((s) => s.setView);
   const history = useMangaStore((s) => s.history);
+  const settings = useMangaStore((s) => s.settings);
+  const t = getTranslations(settings.uiLanguage as Language);
 
   return (
     <div className="animate-fadeIn" style={{ padding: "24px 32px", maxWidth: 1400, margin: "0 auto" }}>
@@ -26,11 +30,10 @@ export default function HomeView() {
       }}>
         <div style={{ position: "relative", zIndex: 1 }}>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff", marginBottom: 6 }}>
-            Welcome to ManwhaWham
+            {t.home.welcome}
           </h1>
           <p style={{ fontSize: 14, color: "rgba(255,255,255,0.8)", maxWidth: 500, lineHeight: 1.5 }}>
-            Your personal manga & manhwa reader. Browse thousands of titles from MangaDex,
-            build your library, and read in style.
+            {t.home.welcomeDesc}
           </p>
           <button
             className="titlebar-no-drag"
@@ -55,7 +58,7 @@ export default function HomeView() {
             onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
           >
             <Search size={15} />
-            Start Browsing
+            {t.home.startBrowsing}
           </button>
         </div>
         {/* Decorative circles */}
@@ -83,8 +86,8 @@ export default function HomeView() {
       {history.length > 0 && (
         <div style={{ marginBottom: 32 }}>
           <SectionHeader
-            title="Continue Reading"
-            subtitle="Pick up where you left off"
+            title={t.home.continueReading}
+            subtitle={t.home.continueReadingDesc}
           />
           <div style={{
             display: "flex",
@@ -97,6 +100,7 @@ export default function HomeView() {
                 key={entry.mangaId}
                 title={entry.mangaTitle}
                 chapter={entry.chapterNumber}
+                chapterLabel={t.home.chapter.replace("{n}", entry.chapterNumber)}
                 coverUrl={entry.coverUrl}
                 onClick={() => {
                   const store = useMangaStore.getState();
@@ -111,12 +115,12 @@ export default function HomeView() {
       {/* Popular */}
       <div style={{ marginBottom: 32 }}>
         <SectionHeader
-          title="Popular"
-          subtitle="Most followed titles"
-          action={
+            title={t.home.popular}
+            subtitle={t.home.popularDesc}
+            action={
             <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>
               <TrendingUp size={14} />
-              Trending
+              {t.home.trending}
             </div>
           }
         />
@@ -134,12 +138,12 @@ export default function HomeView() {
       {/* Latest Updates */}
       <div style={{ marginBottom: 32 }}>
         <SectionHeader
-          title="Latest Updates"
-          subtitle="Recently updated titles"
-          action={
+            title={t.home.latestUpdates}
+            subtitle={t.home.latestUpdatesDesc}
+            action={
             <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--info)", fontSize: 12, fontWeight: 600 }}>
               <Clock size={14} />
-              Fresh
+              {t.home.fresh}
             </div>
           }
         />
@@ -157,9 +161,10 @@ export default function HomeView() {
   );
 }
 
-function ContinueCard({ title, chapter, coverUrl, onClick }: {
+function ContinueCard({ title, chapter, chapterLabel, coverUrl, onClick }: {
   title: string;
   chapter: string;
+  chapterLabel: string;
   coverUrl: string | null;
   onClick: () => void;
 }) {
@@ -211,7 +216,7 @@ function ContinueCard({ title, chapter, coverUrl, onClick }: {
           whiteSpace: "nowrap",
         }}>{title}</div>
         <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-          Chapter {chapter}
+          {chapterLabel}
         </div>
       </div>
     </button>

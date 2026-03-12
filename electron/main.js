@@ -9,10 +9,15 @@ if (process.platform === "win32") {
   app.setAppUserModelId("com.avosos.manwhawham");
 }
 
+// ─── Centralized storage under avosos ecosystem ─────────────────────────────
+const dataDir = path.join(app.getPath("appData"), "avosos", "apps", "manwhawham");
+fs.mkdirSync(dataDir, { recursive: true });
+app.setPath("userData", dataDir);
+
 // ─── Constants ───────────────────────────────────────────────────────────────
 const IS_DEV = !app.isPackaged;
 const DEV_PORT = 3200;
-const DATA_DIR = path.join(app.getPath("userData"), "manwhawham");
+const DATA_DIR = app.getPath("userData");
 const LIBRARY_FILE = path.join(DATA_DIR, "library.json");
 const SETTINGS_FILE = path.join(DATA_DIR, "settings.json");
 const HISTORY_FILE = path.join(DATA_DIR, "history.json");

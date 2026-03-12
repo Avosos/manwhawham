@@ -93,6 +93,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   readerDirection: "ltr",
   imageQuality: "data",
   language: "en",
+  uiLanguage: "en",
   showNSFW: false,
 };
 

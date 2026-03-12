@@ -2,8 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { Minus, Square, Copy, X } from "lucide-react";
+import { useMangaStore } from "@/stores/manga-store";
+import { getTranslations } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 
 export default function Titlebar() {
+  const settings = useMangaStore((s) => s.settings);
+  const t = getTranslations(settings.uiLanguage as Language);
   const [maximized, setMaximized] = useState(false);
 
   useEffect(() => {
@@ -38,10 +43,10 @@ export default function Titlebar() {
         <ManwhaWhamLogo size={22} />
         <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", letterSpacing: 0.5 }}>
-            MANWHAWHAM
+            {t.titlebar.appName}
           </span>
           <span style={{ fontSize: 10, fontWeight: 500, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.8 }}>
-            Reader
+            {t.titlebar.reader}
           </span>
         </div>
       </div>

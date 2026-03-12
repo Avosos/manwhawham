@@ -5,6 +5,8 @@ import { Search, X, Filter } from "lucide-react";
 import { useMangaStore } from "@/stores/manga-store";
 import MangaCard from "@/components/shared/manga-card";
 import { MangaGrid, LoadingGrid, EmptyState } from "@/components/shared/ui";
+import { getTranslations } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 
 export default function BrowseView() {
   const searchResults = useMangaStore((s) => s.searchResults);
@@ -16,6 +18,8 @@ export default function BrowseView() {
   const setSearchQuery = useMangaStore((s) => s.setSearchQuery);
   const openMangaDetail = useMangaStore((s) => s.openMangaDetail);
   const allTags = useMangaStore((s) => s.allTags);
+  const settings = useMangaStore((s) => s.settings);
+  const t = getTranslations(settings.uiLanguage as Language);
 
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -50,8 +54,8 @@ export default function BrowseView() {
   };
 
   const displayManga = localQuery.trim() ? searchResults : popularManga;
-  const genreTags = allTags.filter((t) => t.group === "genre");
-  const themeTags = allTags.filter((t) => t.group === "theme");
+  const genreTags = allTags.filter((tag) => tag.group === "genre");
+  const themeTags = allTags.filter((tag) => tag.group === "theme");
 
   return (
     <div className="animate-fadeIn" style={{ padding: "24px 32px", maxWidth: 1400, margin: "0 auto" }}>
@@ -71,7 +75,7 @@ export default function BrowseView() {
             <Search size={16} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
             <input
               type="text"
-              placeholder="Search manga, manhwa, manhua..."
+              placeholder={t.browse.searchPlaceholder}
               value={localQuery}
               onChange={(e) => handleInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && localQuery.trim() && searchManga(localQuery.trim())}
@@ -104,7 +108,7 @@ export default function BrowseView() {
             }}
           >
             <Filter size={14} />
-            Filters
+            {t.browse.filters}
             {selectedTags.length > 0 && (
               <span className="badge" style={{ marginLeft: 4 }}>{selectedTags.length}</span>
             )}
@@ -123,7 +127,7 @@ export default function BrowseView() {
             {genreTags.length > 0 && (
               <div style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 8 }}>
-                  Genres
+                  {t.browse.genres}
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {genreTags.map((tag) => (
@@ -140,7 +144,7 @@ export default function BrowseView() {
             {themeTags.length > 0 && (
               <div>
                 <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 8 }}>
-                  Themes
+                  {t.browse.themes}
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {themeTags.slice(0, 30).map((tag) => (
@@ -161,11 +165,11 @@ export default function BrowseView() {
       {/* Results Header */}
       <div style={{ marginBottom: 16 }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)" }}>
-          {localQuery.trim() ? `Results for "${localQuery}"` : "Popular Manga"}
+          {localQuery.trim() ? t.browse.resultsFor.replace("{query}", localQuery) : t.browse.popularManga}
         </h2>
         {localQuery.trim() && searchTotal > 0 && (
           <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
-            {searchTotal} titles found
+            {t.browse.titlesFound.replace("{n}", String(searchTotal))}
           </p>
         )}
       </div>
@@ -176,8 +180,9 @@ export default function BrowseView() {
       ) : displayManga.length === 0 ? (
         <EmptyState
           icon="🔍"
-          title="No results found"
-          description={localQuery.trim() ? `No manga found matching "${localQuery}". Try a different search term.` : "Start searching to find manga."}
+          title={t.browse.noResults}
+          description={localQuery.trim() ? t.browse.noResultsDesc.replace("{query}", localQuery) : t.browse.startSearching}
+        />
         />
       ) : (
         <MangaGrid>

@@ -1,32 +1,51 @@
 "use client";
 
 import { useMangaStore } from "@/stores/manga-store";
-import { Monitor, BookOpen, Palette, Globe, Eye } from "lucide-react";
+import { Monitor, BookOpen, Palette, Globe, Eye, Languages } from "lucide-react";
+import { getTranslations, LANGUAGES } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 
 export default function SettingsView() {
   const settings = useMangaStore((s) => s.settings);
   const updateSettings = useMangaStore((s) => s.updateSettings);
+  const t = getTranslations(settings.uiLanguage as Language);
 
   return (
     <div className="animate-fadeIn" style={{ padding: "24px 32px", maxWidth: 700, margin: "0 auto" }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", marginBottom: 24 }}>Settings</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", marginBottom: 24 }}>{t.settings.title}</h2>
+
+      {/* Language */}
+      <SettingsSection icon={<Languages size={16} />} title={t.settings.language}>
+        <SettingsRow label={t.settings.languageDesc}>
+          <select
+            value={settings.uiLanguage}
+            onChange={(e) => updateSettings({ uiLanguage: e.target.value as "en" | "de" })}
+            className="input"
+            style={{ width: 160 }}
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.value} value={lang.value}>{lang.label}</option>
+            ))}
+          </select>
+        </SettingsRow>
+      </SettingsSection>
 
       {/* Appearance */}
-      <SettingsSection icon={<Palette size={16} />} title="Appearance">
-        <SettingsRow label="Theme">
+      <SettingsSection icon={<Palette size={16} />} title={t.settings.appearance}>
+        <SettingsRow label={t.settings.theme}>
           <select
             value={settings.theme}
             onChange={(e) => updateSettings({ theme: e.target.value as "dark" | "grey" | "light" })}
             className="input"
             style={{ width: 160 }}
           >
-            <option value="dark">Dark</option>
-            <option value="grey">Grey</option>
-            <option value="light">Light</option>
+            <option value="dark">{t.settings.dark}</option>
+            <option value="grey">{t.settings.grey}</option>
+            <option value="light">{t.settings.light}</option>
           </select>
         </SettingsRow>
 
-        <SettingsRow label="Accent Color">
+        <SettingsRow label={t.settings.accentColor}>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {["#7c5cfc", "#e879f9", "#f87171", "#4ade80", "#60a5fa", "#fbbf24"].map((color) => (
               <button
@@ -61,84 +80,84 @@ export default function SettingsView() {
       </SettingsSection>
 
       {/* Reader */}
-      <SettingsSection icon={<BookOpen size={16} />} title="Reader">
-        <SettingsRow label="Reading Mode">
+      <SettingsSection icon={<BookOpen size={16} />} title={t.settings.readerSection}>
+        <SettingsRow label={t.settings.readingMode}>
           <select
             value={settings.readerMode}
             onChange={(e) => updateSettings({ readerMode: e.target.value as "vertical" | "paged" })}
             className="input"
             style={{ width: 160 }}
           >
-            <option value="vertical">Vertical Scroll</option>
-            <option value="paged">Paged</option>
+            <option value="vertical">{t.settings.verticalScroll}</option>
+            <option value="paged">{t.settings.pagedMode}</option>
           </select>
         </SettingsRow>
 
-        <SettingsRow label="Image Fit">
+        <SettingsRow label={t.settings.imageFit}>
           <select
             value={settings.readerFit}
             onChange={(e) => updateSettings({ readerFit: e.target.value as "width" | "height" | "original" })}
             className="input"
             style={{ width: 160 }}
           >
-            <option value="width">Fit Width</option>
-            <option value="height">Fit Height</option>
-            <option value="original">Original Size</option>
+            <option value="width">{t.settings.fitWidth}</option>
+            <option value="height">{t.settings.fitHeight}</option>
+            <option value="original">{t.settings.originalSize}</option>
           </select>
         </SettingsRow>
 
-        <SettingsRow label="Reading Direction">
+        <SettingsRow label={t.settings.readingDirection}>
           <select
             value={settings.readerDirection}
             onChange={(e) => updateSettings({ readerDirection: e.target.value as "ltr" | "rtl" })}
             className="input"
             style={{ width: 160 }}
           >
-            <option value="ltr">Left to Right</option>
-            <option value="rtl">Right to Left</option>
+            <option value="ltr">{t.settings.leftToRight}</option>
+            <option value="rtl">{t.settings.rightToLeft}</option>
           </select>
         </SettingsRow>
       </SettingsSection>
 
       {/* Image Quality */}
-      <SettingsSection icon={<Monitor size={16} />} title="Performance">
-        <SettingsRow label="Image Quality">
+      <SettingsSection icon={<Monitor size={16} />} title={t.settings.performance}>
+        <SettingsRow label={t.settings.imageQuality}>
           <select
             value={settings.imageQuality}
             onChange={(e) => updateSettings({ imageQuality: e.target.value as "data" | "dataSaver" })}
             className="input"
             style={{ width: 160 }}
           >
-            <option value="data">High Quality</option>
-            <option value="dataSaver">Data Saver</option>
+            <option value="data">{t.settings.highQuality}</option>
+            <option value="dataSaver">{t.settings.dataSaver}</option>
           </select>
         </SettingsRow>
       </SettingsSection>
 
       {/* Language */}
-      <SettingsSection icon={<Globe size={16} />} title="Content">
-        <SettingsRow label="Preferred Language">
+      <SettingsSection icon={<Globe size={16} />} title={t.settings.content}>
+        <SettingsRow label={t.settings.preferredLanguage}>
           <select
             value={settings.language}
             onChange={(e) => updateSettings({ language: e.target.value })}
             className="input"
             style={{ width: 160 }}
           >
-            <option value="en">English</option>
-            <option value="ja">Japanese</option>
-            <option value="ko">Korean</option>
-            <option value="zh">Chinese</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="es">Spanish</option>
-            <option value="pt-br">Portuguese (BR)</option>
-            <option value="it">Italian</option>
-            <option value="ru">Russian</option>
-            <option value="pl">Polish</option>
+            <option value="en">{t.contentLanguages.english}</option>
+            <option value="ja">{t.contentLanguages.japanese}</option>
+            <option value="ko">{t.contentLanguages.korean}</option>
+            <option value="zh">{t.contentLanguages.chinese}</option>
+            <option value="fr">{t.contentLanguages.french}</option>
+            <option value="de">{t.contentLanguages.german}</option>
+            <option value="es">{t.contentLanguages.spanish}</option>
+            <option value="pt-br">{t.contentLanguages.portugueseBr}</option>
+            <option value="it">{t.contentLanguages.italian}</option>
+            <option value="ru">{t.contentLanguages.russian}</option>
+            <option value="pl">{t.contentLanguages.polish}</option>
           </select>
         </SettingsRow>
 
-        <SettingsRow label="Show NSFW Content">
+        <SettingsRow label={t.settings.showNSFW}>
           <ToggleSwitch
             value={settings.showNSFW}
             onChange={(val) => updateSettings({ showNSFW: val })}
@@ -147,11 +166,11 @@ export default function SettingsView() {
       </SettingsSection>
 
       {/* About */}
-      <SettingsSection icon={<Eye size={16} />} title="About">
+      <SettingsSection icon={<Eye size={16} />} title={t.settings.about}>
         <div style={{ padding: "8px 0", fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.8 }}>
-          <strong style={{ color: "var(--text-primary)" }}>ManwhaWham</strong> v0.1.0 alpha<br />
-          Part of the <strong style={{ color: "var(--accent)" }}>Avosos</strong> ecosystem<br />
-          Powered by MangaDex API
+          <strong style={{ color: "var(--text-primary)" }}>{t.settings.aboutVersion}</strong><br />
+          {t.settings.aboutEcosystem}<br />
+          {t.settings.aboutPoweredBy}
         </div>
       </SettingsSection>
     </div>

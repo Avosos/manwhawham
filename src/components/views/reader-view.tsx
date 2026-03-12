@@ -12,6 +12,8 @@ import {
   Minimize2,
   X,
 } from "lucide-react";
+import { getTranslations } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 
 export default function ReaderView() {
   const reader = useMangaStore((s) => s.reader);
@@ -22,6 +24,7 @@ export default function ReaderView() {
   const setReaderPage = useMangaStore((s) => s.setReaderPage);
   const updateSettings = useMangaStore((s) => s.updateSettings);
   const addToHistory = useMangaStore((s) => s.addToHistory);
+  const t = getTranslations(settings.uiLanguage as Language);
 
   const [showUI, setShowUI] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
@@ -175,7 +178,7 @@ export default function ReaderView() {
               {reader.mangaTitle}
             </div>
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
-              Chapter {chapter?.chapter || "?"} {chapter?.title ? `— ${chapter.title}` : ""}
+              {t.reader.chapter.replace("{n}", chapter?.chapter || "?")} {chapter?.title ? `— ${chapter.title}` : ""}
             </div>
           </div>
         </div>
@@ -208,40 +211,40 @@ export default function ReaderView() {
           boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
         }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-primary)", marginBottom: 12 }}>
-            Quick Settings
+            {t.reader.quickSettings}
           </div>
-          <QuickSetting label="Mode">
+          <QuickSetting label={t.reader.mode}>
             <select
               value={readerMode}
               onChange={(e) => updateSettings({ readerMode: e.target.value as "vertical" | "paged" })}
               className="input"
               style={{ fontSize: 12, padding: "4px 8px" }}
             >
-              <option value="vertical">Vertical</option>
-              <option value="paged">Paged</option>
+              <option value="vertical">{t.reader.vertical}</option>
+              <option value="paged">{t.reader.paged}</option>
             </select>
           </QuickSetting>
-          <QuickSetting label="Fit">
+          <QuickSetting label={t.reader.fit}>
             <select
               value={readerFit}
               onChange={(e) => updateSettings({ readerFit: e.target.value as "width" | "height" | "original" })}
               className="input"
               style={{ fontSize: 12, padding: "4px 8px" }}
             >
-              <option value="width">Width</option>
-              <option value="height">Height</option>
-              <option value="original">Original</option>
+              <option value="width">{t.reader.fitWidth}</option>
+              <option value="height">{t.reader.fitHeight}</option>
+              <option value="original">{t.reader.original}</option>
             </select>
           </QuickSetting>
-          <QuickSetting label="Direction">
+          <QuickSetting label={t.reader.direction}>
             <select
               value={direction}
               onChange={(e) => updateSettings({ readerDirection: e.target.value as "ltr" | "rtl" })}
               className="input"
               style={{ fontSize: 12, padding: "4px 8px" }}
             >
-              <option value="ltr">LTR</option>
-              <option value="rtl">RTL</option>
+              <option value="ltr">{t.reader.ltr}</option>
+              <option value="rtl">{t.reader.rtl}</option>
             </select>
           </QuickSetting>
         </div>
@@ -252,14 +255,14 @@ export default function ReaderView() {
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ textAlign: "center" }}>
             <Spinner size={36} />
-            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginTop: 12 }}>Loading chapter...</div>
+            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginTop: 12 }}>{t.reader.loadingChapter}</div>
           </div>
         </div>
       ) : pages.length === 0 ? (
         <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ textAlign: "center", color: "rgba(255,255,255,0.5)" }}>
-            <p style={{ fontSize: 14, marginBottom: 8 }}>No pages available</p>
-            <p style={{ fontSize: 12 }}>This chapter may require an external reader.</p>
+            <p style={{ fontSize: 14, marginBottom: 8 }}>{t.reader.noPagesAvailable}</p>
+            <p style={{ fontSize: 12 }}>{t.reader.noPagesDesc}</p>
           </div>
         </div>
       ) : readerMode === "vertical" ? (
@@ -296,12 +299,12 @@ export default function ReaderView() {
           }}>
             {reader.currentChapterIndex > 0 && (
               <button className="btn-secondary" onClick={prevChapter} style={{ color: "#fff", borderColor: "rgba(255,255,255,0.2)" }}>
-                <ChevronLeft size={14} /> Previous Chapter
+                <ChevronLeft size={14} /> {t.reader.previousChapter}
               </button>
             )}
             {reader.currentChapterIndex < reader.chapters.length - 1 && (
               <button className="btn-primary" onClick={nextChapter}>
-                Next Chapter <ChevronRight size={14} />
+                {t.reader.nextChapter} <ChevronRight size={14} />
               </button>
             )}
           </div>
@@ -325,8 +328,8 @@ export default function ReaderView() {
           <ReaderImage
             key={`${chapter?.id}-${currentPage}`}
             src={pages[currentPage]}
-            alt={`Page ${currentPage + 1}`}
-            style={{
+            alt={t.reader.page.replace("{n}", String(currentPage + 1))}
+            style={{{
               ...fitStyle,
               maxHeight: "calc(100vh - 140px)",
               objectFit: "contain",
@@ -415,6 +418,7 @@ function ReaderImage({ src, alt, style, onLoad }: {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const [proxiedSrc, setProxiedSrc] = useState<string | null>(null);
+  const failedText = useMangaStore.getState().settings.uiLanguage === "de" ? "Bild konnte nicht geladen werden" : "Failed to load image";
 
   useEffect(() => {
     // Reset state when src changes
@@ -447,7 +451,7 @@ function ReaderImage({ src, alt, style, onLoad }: {
         color: "rgba(255,255,255,0.3)",
         fontSize: 13,
       }}>
-        Failed to load image
+        {failedText}
       </div>
     );
   }
